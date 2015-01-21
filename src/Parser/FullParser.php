@@ -2,7 +2,6 @@
 namespace ES\Parser\Parser;
 
 use ES\Parser\Assertion\EndAssertion;
-use ES\Parser\Combinator\ConcatenationCombinator;
 use ES\Parser\Combinator\LookaheadCombinator;
 use ES\Parser\FailureException;
 use ES\Parser\Parser;

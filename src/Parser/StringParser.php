@@ -7,18 +7,25 @@ use ES\Parser\Result;
 
 class StringParser extends Parser
 {
+    const CASE_SENSITIVE = 'sensitive';
+    const CASE_INSENSITIVE = 'ignore';
+
     /** @var string */
     private $string;
     /** @var int */
     private $length;
+    /** @var string */
+    private $mode;
 
     /**
      * @param string $string
+     * @param string $mode
      */
-    public function __construct($string)
+    public function __construct($string, $mode = self::CASE_SENSITIVE)
     {
         $this->string = $string;
         $this->length = strlen($string);
+        $this->mode = $mode;
     }
 
     /**
@@ -33,7 +40,8 @@ class StringParser extends Parser
                 ->setExpecting($this->string);
         }
 
-        if (substr_compare($string, $this->string, $offset, $this->length) === 0) {
+        $caseInsensitive = $this->mode === self::CASE_INSENSITIVE;
+        if (substr_compare($string, $this->string, $offset, $this->length, $caseInsensitive) === 0) {
             return new Result\StringResult($this->string);
         }
 
