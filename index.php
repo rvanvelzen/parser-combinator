@@ -33,18 +33,33 @@ $atom = new Repeat(new OneOf([
 // Should actually have "quoted-string" too, but nobody uses that (nor should they)
 $word = new OneOf([$atom]);
 
-$domainTld = new OneOf();
+$tldSpec = new OneOf();
 foreach (['com', 'org', 'net', 'nl', 'be'] as $tld) {
-    $domainTld->addParser(new String($tld));
+    $tldSpec->addParser(new String($tld));
 }
-$domainTld = new Concat([new String('.'), $domainTld, new EOS()]);
+$tldSpec = new Concat([new String('.'), $tldSpec, new EOS()]);
 
-// If you want to really impress your peers, write your code like this and pretend you can read it!
-$dotAtom = new Concat([$word, new Repeat(new Concat([new String('.'), $word]))]);
-$noTld = new Lookahead(Lookahead::NEGATIVE, new Nothing(), $domainTld);
-$domainEnd = new Concat([$noTld, new Concat([new String('.'), $atom])]);
-$domain = new Concat([$atom, new Repeat($domainEnd, 1, Repeat::INFINITE), $domainTld]);
-$addrSpec = new Concat([$dotAtom, new String('@'), $domain]);
+$addrSpec = new Concat(
+    [
+        new Concat([
+            $word,
+            new Repeat(new Concat([new String('.'), $word]))
+        ]),
+        new String('@'),
+        new Concat([
+            $atom,
+            new Repeat(
+                new Concat([
+                    new Lookahead(Lookahead::NEGATIVE, new Nothing(), $tldSpec),
+                    new Concat([new String('.'), $atom])
+                ]),
+                1,
+                Repeat::INFINITE
+            ),
+            $tldSpec
+        ])
+    ]
+);
 
 $S = new FullParser($addrSpec);
 
