@@ -81,7 +81,7 @@ $addrSpec = (new Concat([
 $S = new FullParser($addrSpec);
 
 try {
-    $match = $S->match('this.is@an.email.address.com');
+    $match = $S->parse('this.is@an.email.address.com');
     var_dump($match->getSemanticValue());
 } catch (FailureException $ex) {
     echo $ex->getDisplayMessage() . "\n";

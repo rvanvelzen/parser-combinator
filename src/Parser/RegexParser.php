@@ -4,6 +4,7 @@ namespace ES\Parser\Parser;
 use ES\Parser\FailureException;
 use ES\Parser\Parser;
 use ES\Parser\Result;
+use ES\Parser\Input;
 use RuntimeException;
 
 class RegexParser extends Parser
@@ -20,18 +21,18 @@ class RegexParser extends Parser
     }
 
     /**
-     * @param string $string
+     * @param Input $input
      * @param int $offset
      * @return Result
      */
-    public function match($string, $offset = 0)
+    protected function match(Input $input, $offset)
     {
-        if ($offset >= strlen($string)) {
+        if ($offset >= $input->getLength()) {
             throw new FailureException('Unexpected EOF', $offset);
         }
 
         $match = null;
-        if (preg_match($this->regex, substr($string, $offset), $match, PREG_OFFSET_CAPTURE) === 1) {
+        if (preg_match($this->regex, $input->getSubstring($offset), $match, PREG_OFFSET_CAPTURE) === 1) {
             list($text, $position) = $match[0];
             if ($position > 0) {
                 throw new RuntimeException(sprintf(

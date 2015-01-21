@@ -4,17 +4,18 @@ namespace ES\Parser\Assertion;
 use ES\Parser\FailureException;
 use ES\Parser\Parser;
 use ES\Parser\Result;
+use ES\Parser\Input;
 
 class EndAssertion extends Parser
 {
     /**
-     * @param string $string
+     * @param Input $input
      * @param int $offset
      * @return Result
      */
-    public function match($string, $offset = 0)
+    protected function match(Input $input, $offset)
     {
-        if ($offset < strlen($string)) {
+        if ($offset < $input->getLength()) {
             throw (new FailureException('Expected end-of-string', $offset))
                 ->setExpecting('$eos');
         }

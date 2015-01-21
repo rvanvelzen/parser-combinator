@@ -4,6 +4,7 @@ namespace ES\Parser\Parser;
 use ES\Parser\FailureException;
 use ES\Parser\Parser;
 use ES\Parser\Result;
+use ES\Parser\Input;
 
 class CharacterSetParser extends Parser
 {
@@ -38,18 +39,18 @@ class CharacterSetParser extends Parser
     }
 
     /**
-     * @param string $string
+     * @param Input $input
      * @param int $offset
      * @return Result
      */
-    public function match($string, $offset = 0)
+    protected function match(Input $input, $offset)
     {
-        if ($offset >= strlen($string)) {
+        if ($offset >= $input->getLength()) {
             throw (new FailureException('Unexpected EOF', $offset))
                 ->setExpecting($this->characters);
         }
 
-        $char = $string[$offset];
+        $char = $input->getSubstring($offset, 1);
         if (in_array($char, $this->characters)) {
             return $this->expandResult(new Result\StringResult($char));
         }

@@ -6,12 +6,19 @@ abstract class Parser
     /** @var callable */
     private $action;
 
+    public function parse($string)
+    {
+        $state = new Input($string);
+        return $this->match($state, 0);
+    }
+
     /**
-     * @param string $string
+     * @param Input $input
      * @param int $offset
      * @return Result
+     * @internal param Input $state
      */
-    abstract public function match($string, $offset = 0);
+    abstract protected function match(Input $input, $offset);
 
     /**
      * @param callable $action

@@ -4,9 +4,9 @@ namespace ES\Parser\Parser;
 use BadMethodCallException;
 use ES\Parser\Assertion\EndAssertion;
 use ES\Parser\Combinator\LookaheadCombinator;
-use ES\Parser\FailureException;
 use ES\Parser\Parser;
 use ES\Parser\Result;
+use ES\Parser\Input;
 
 class FullParser extends Parser
 {
@@ -26,14 +26,13 @@ class FullParser extends Parser
     }
 
     /**
-     * @param string $string
+     * @param Input $input
      * @param int $offset
      * @return Result
-     * @throws FailureException
      */
-    public function match($string, $offset = 0)
+    protected function match(Input $input, $offset)
     {
-        return $this->parser->match($string, $offset);
+        return $this->parser->match($input, $offset);
     }
 
     /**

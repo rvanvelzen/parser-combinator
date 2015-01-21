@@ -4,6 +4,7 @@ namespace ES\Parser\Parser;
 use ES\Parser\FailureException;
 use ES\Parser\Parser;
 use ES\Parser\Result;
+use ES\Parser\Input;
 
 class StringParser extends Parser
 {
@@ -29,19 +30,25 @@ class StringParser extends Parser
     }
 
     /**
-     * @param string $string
+     * @param Input $input
      * @param int $offset
      * @return Result
      */
-    public function match($string, $offset = 0)
+    protected function match(Input $input, $offset)
     {
-        if ($offset >= strlen($string)) {
+        if ($offset >= $input->getLength()) {
             throw (new FailureException('Unexpected EOF', $offset))
                 ->setExpecting($this->string);
         }
 
-        $caseInsensitive = $this->mode === self::CASE_INSENSITIVE;
-        if (substr_compare($string, $this->string, $offset, $this->length, $caseInsensitive) === 0) {
+        $comparison = $input->getSubstring($offset, $this->length);
+        if ($this->mode === self::CASE_INSENSITIVE) {
+            $match = strcasecmp($this->string, $comparison) === 0;
+        } else {
+            $match = $this->string === $comparison;
+        }
+
+        if ($match) {
             return $this->expandResult(new Result\StringResult($this->string));
         }
 

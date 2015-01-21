@@ -4,6 +4,7 @@ namespace ES\Parser\Combinator;
 use ES\Parser\FailureException;
 use ES\Parser\Parser;
 use ES\Parser\Result;
+use ES\Parser\Input;
 
 class RepeatCombinator extends Parser
 {
@@ -30,49 +31,37 @@ class RepeatCombinator extends Parser
     }
 
     /**
-     * @param string $string
+     * @param Input $input
      * @param int $offset
      * @return Result
      */
-    public function match($string, $offset = 0)
+    protected function match(Input $input, $offset)
     {
         $result = new Result\GroupResult();
-        /** @var FailureException|null $failure */
-        $failure = null;
 
         $matches = 0;
         try {
             while ($matches < $this->max) {
-                $match = $this->parser->match($string, $offset + $result->getLength());
+                $match = $this->parser->match($input, $offset + $result->getLength());
 
                 $result->addResult($match);
 
                 ++$matches;
             }
         } catch (FailureException $ex) {
-            if ($ex->isMoreUsefulThan($failure)) {
-                $failure = $ex;
-            }
+            // actually handling error cases follows
         }
 
         if ($matches < $this->min) {
-            if (!$failure) {
-                $failure = new FailureException(sprintf(
-                    'Unable to match at least %d repetitions, only matched %d',
-                    $this->min,
-                    $matches
-                ), $offset);
-            }
-
-            throw $failure;
+            throw new FailureException(sprintf(
+                'Unable to match at least %d repetitions, only matched %d',
+                $this->min,
+                $matches
+            ), $offset);
         }
 
         if (!$matches) {
             $result = new Result\EmptyResult();
-        }
-
-        if ($failure) {
-            $result->setFailure($failure);
         }
 
         return $this->expandResult($result);

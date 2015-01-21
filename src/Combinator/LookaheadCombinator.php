@@ -5,6 +5,7 @@ use BadMethodCallException;
 use ES\Parser\FailureException;
 use ES\Parser\Parser;
 use ES\Parser\Result;
+use ES\Parser\Input;
 
 class LookaheadCombinator extends Parser
 {
@@ -31,18 +32,18 @@ class LookaheadCombinator extends Parser
     }
 
     /**
-     * @param string $string
+     * @param Input $input
      * @param int $offset
      * @return Result
      */
-    public function match($string, $offset = 0)
+    protected function match(Input $input, $offset)
     {
-        $result = $this->parser->match($string, $offset);
+        $result = $this->parser->match($input, $offset);
         /** @var FailureException|null $failure */
         $failure = null;
 
         try {
-            $this->lookahead->match($string, $offset + $result->getLength());
+            $this->lookahead->match($input, $offset + $result->getLength());
         } catch (FailureException $failure) {
             // handle this right below here
         }

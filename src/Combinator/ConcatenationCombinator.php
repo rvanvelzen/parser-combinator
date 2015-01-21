@@ -3,6 +3,7 @@ namespace ES\Parser\Combinator;
 
 use ES\Parser\Parser;
 use ES\Parser\Result;
+use ES\Parser\Input;
 
 class ConcatenationCombinator extends Parser
 {
@@ -30,16 +31,16 @@ class ConcatenationCombinator extends Parser
     }
 
     /**
-     * @param string $string
+     * @param Input $input
      * @param int $offset
      * @return Result
      */
-    public function match($string, $offset = 0)
+    protected function match(Input $input, $offset)
     {
         $result = new Result\GroupResult();
 
         foreach ($this->parsers as $parser) {
-            $match = $parser->match($string, $offset);
+            $match = $parser->match($input, $offset);
 
             $result->addResult($match);
             $offset += $match->getLength();

@@ -5,6 +5,7 @@ use BadMethodCallException;
 use ES\Parser\FailureException;
 use ES\Parser\Parser;
 use ES\Parser\Result;
+use ES\Parser\Input;
 
 class OrCombinator extends Parser
 {
@@ -32,20 +33,20 @@ class OrCombinator extends Parser
     }
 
     /**
-     * @param string $string
+     * @param Input $input
      * @param int $offset
      * @return Result
      */
-    public function match($string, $offset = 0)
+    protected function match(Input $input, $offset)
     {
-        /** @var Result $longest */
-        $longest = new Result\EmptyResult();
+        /** @var Result|null $longest */
+        $longest = null;
         $failure = null;
 
         foreach ($this->parsers as $parser) {
             try {
-                $match = $parser->match($string, $offset);
-                if ($match->getLength() > $longest->getLength()) {
+                $match = $parser->match($input, $offset);
+                if (!$longest || $match->getLength() > $longest->getLength()) {
                     $longest = $match;
                 }
             } catch (FailureException $ex) {
@@ -55,12 +56,8 @@ class OrCombinator extends Parser
             }
         }
 
-        if ($failure) {
-            $longest->setFailure($failure);
-        }
-
-        if (!$longest->getLength() && $longest->getFailure()) {
-            throw $longest->getFailure();
+        if (!$longest && $failure) {
+            throw $failure;
         }
 
         return $longest;

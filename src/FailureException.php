@@ -85,7 +85,10 @@ class FailureException extends RuntimeException
         }
 
         if ($this->getOffset() == $ex->getOffset()) {
-            return $this->getExpecting() && !$ex->getExpecting();
+            $mine = $this->getExpecting();
+            $other = $ex->getExpecting();
+
+            return $mine && (!$other || (count($mine) < count($other)));
         }
 
         return $this->getOffset() > $ex->getOffset();
