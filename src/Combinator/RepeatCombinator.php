@@ -7,6 +7,8 @@ use ES\Parser\Result;
 
 class RepeatCombinator extends Parser
 {
+    const INFINITE = null;
+
     /** @var Parser */
     private $parser;
     /** @var int */
@@ -19,12 +21,12 @@ class RepeatCombinator extends Parser
      * @param int $min
      * @param int|null $max
      */
-    public function __construct(Parser $parser, $min = 0, $max = null)
+    public function __construct(Parser $parser, $min = 0, $max = self::INFINITE)
     {
         $this->parser = $parser;
 
         $this->min = $min;
-        $this->max = $max === null ? INF : $max;
+        $this->max = $max === self::INFINITE ? PHP_INT_MAX : $max;
     }
 
     /**
@@ -57,9 +59,9 @@ class RepeatCombinator extends Parser
         if ($matches < $this->min) {
             if (!$failure) {
                 $failure = new FailureException(sprintf(
-                    'Unable to match at least %d repetitions of %d repetitions',
-                    $this->min - $matches,
-                    $this->min
+                    'Unable to match at least %d repetitions, only matched %d',
+                    $this->min,
+                    $matches
                 ), $offset);
             }
 

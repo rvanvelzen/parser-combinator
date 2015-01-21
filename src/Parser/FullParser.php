@@ -1,6 +1,9 @@
 <?php
 namespace ES\Parser\Parser;
 
+use ES\Parser\Assertion\EndAssertion;
+use ES\Parser\Combinator\ConcatenationCombinator;
+use ES\Parser\Combinator\LookaheadCombinator;
 use ES\Parser\FailureException;
 use ES\Parser\Parser;
 use ES\Parser\Result;
@@ -15,7 +18,11 @@ class FullParser extends Parser
      */
     public function __construct(Parser $parser)
     {
-        $this->parser = $parser;
+        $this->parser = new LookaheadCombinator(
+            LookaheadCombinator::POSITIVE,
+            $parser,
+            new EndAssertion()
+        );
     }
 
     /**
@@ -26,15 +33,6 @@ class FullParser extends Parser
      */
     public function match($string, $offset = 0)
     {
-        $result = $this->parser->match($string, $offset);
-        if ($result->getLength() === strlen($string)) {
-            return $result;
-        } else {
-            if (($failure = $result->getFailure())) {
-                throw $failure;
-            }
-
-            throw new FailureException('Parser ended before EOF', $result->getLength());
-        }
+        return $this->parser->match($string, $offset);
     }
 }
