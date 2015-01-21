@@ -5,16 +5,13 @@ abstract class Result
 {
     /** @var FailureException */
     private $failure;
+    /** @var callable */
+    private $action;
 
     /**
      * @return int
      */
     abstract public function getLength();
-
-    /**
-     * @return string
-     */
-    abstract public function exportTree();
 
     /**
      * @return FailureException
@@ -38,10 +35,25 @@ abstract class Result
     }
 
     /**
-     * Prune empty nodes.
+     * @param callable $action
+     * @return $this
      */
-    public function getClean()
+    public function setAction(callable $action = null)
     {
+        $this->action = $action;
         return $this;
     }
+
+    /**
+     * @return callable|null
+     */
+    public function getAction()
+    {
+        return $this->action;
+    }
+
+    /**
+     * @return mixed
+     */
+    abstract public function getSemanticValue();
 }

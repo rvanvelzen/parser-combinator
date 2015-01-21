@@ -19,6 +19,6 @@ class EndAssertion extends Parser
                 ->setExpecting('$eos');
         }
 
-        return new Result\EmptyResult();
+        return $this->expandResult(new Result\EmptyResult());
     }
 }

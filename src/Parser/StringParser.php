@@ -42,7 +42,7 @@ class StringParser extends Parser
 
         $caseInsensitive = $this->mode === self::CASE_INSENSITIVE;
         if (substr_compare($string, $this->string, $offset, $this->length, $caseInsensitive) === 0) {
-            return new Result\StringResult($this->string);
+            return $this->expandResult(new Result\StringResult($this->string));
         }
 
         throw (new FailureException('Unable to match', $offset))

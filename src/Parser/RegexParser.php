@@ -41,7 +41,7 @@ class RegexParser extends Parser
                 ));
             }
 
-            return new Result\StringResult($text);
+            return $this->expandResult(new Result\StringResult($text));
         }
 
         throw new FailureException(sprintf('Unable to match "%s"', $this->regex), $offset);

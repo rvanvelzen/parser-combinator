@@ -1,6 +1,7 @@
 <?php
 namespace ES\Parser\Combinator;
 
+use BadMethodCallException;
 use ES\Parser\FailureException;
 use ES\Parser\Parser;
 use ES\Parser\Result;
@@ -63,5 +64,14 @@ class OrCombinator extends Parser
         }
 
         return $longest;
+    }
+
+    /**
+     * @param callable $action
+     * @return $this
+     */
+    public function setAction(callable $action)
+    {
+        throw new BadMethodCallException('OrCombinator does not support semantic actions');
     }
 }

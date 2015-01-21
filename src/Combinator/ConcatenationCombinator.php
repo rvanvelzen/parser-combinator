@@ -45,6 +45,6 @@ class ConcatenationCombinator extends Parser
             $offset += $match->getLength();
         }
 
-        return $result;
+        return $this->expandResult($result);
     }
 }

@@ -1,6 +1,7 @@
 <?php
 namespace ES\Parser\Parser;
 
+use BadMethodCallException;
 use ES\Parser\Assertion\EndAssertion;
 use ES\Parser\Combinator\LookaheadCombinator;
 use ES\Parser\FailureException;
@@ -33,5 +34,14 @@ class FullParser extends Parser
     public function match($string, $offset = 0)
     {
         return $this->parser->match($string, $offset);
+    }
+
+    /**
+     * @param callable $action
+     * @return $this
+     */
+    public function setAction(callable $action)
+    {
+        throw new BadMethodCallException('FullParser does not support semantic actions');
     }
 }

@@ -14,6 +14,6 @@ class EmptyParser extends Parser
      */
     public function match($string, $offset = 0)
     {
-        return new Result\EmptyResult();
+        return $this->expandResult(new Result\EmptyResult());
     }
 }

@@ -14,10 +14,12 @@ class EmptyResult extends Result
     }
 
     /**
-     * @return string
+     * @return mixed
      */
-    public function exportTree()
+    public function getSemanticValue()
     {
-        return '';
+        return null;
     }
+
+
 }

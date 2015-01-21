@@ -36,9 +36,9 @@ class StringResult extends Result
     }
 
     /**
-     * @return string
+     * @return mixed
      */
-    public function exportTree()
+    public function getSemanticValue()
     {
         return $this->string;
     }

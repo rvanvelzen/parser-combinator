@@ -23,12 +23,17 @@ spl_autoload_register(function ($class) {
     require $path;
 });
 
-$atom = new Repeat(new OneOf([
+$concat = function (array $params) {
+    return implode('', $params);
+};
+
+$atom = (new Repeat(new OneOf([
     new CharSet(range('A', 'Z')),
     new CharSet(range('a', 'z')),
     new CharSet(range('0', '9')),
     new CharSet('!#$%&\'*+/=?^_`{|}~-'),
-]), 1);
+]), 1));
+$atom->setAction($concat);
 
 // Should actually have "quoted-string" too, but nobody uses that (nor should they)
 $word = new OneOf([$atom]);
@@ -38,33 +43,46 @@ foreach (['com', 'org', 'net', 'nl', 'be'] as $tld) {
     $tldSpec->addParser(new String($tld));
 }
 $tldSpec = new Concat([new String('.'), $tldSpec, new EOS()]);
+$tldSpec->setAction($concat);
 
-$addrSpec = new Concat([
-    new Concat([
+$addrSpec = (new Concat([
+    (new Concat([
         $word,
-        new Repeat(new Concat([new String('.'), $word]))
-    ]),
+        (new Repeat(
+            (new Concat([new String('.'), $word]))
+                ->setAction($concat)
+        ))->setAction($concat)
+    ]))->setAction($concat),
     new String('@'),
-    new Concat([
+    (new Concat([
         $atom,
-        new Repeat(
-            new Concat([
+        (new Repeat(
+            (new Concat([
                 new Lookahead(Lookahead::NEGATIVE, new Nothing(), $tldSpec),
-                new Concat([new String('.'), $atom])
-            ]),
+                (new Concat([new String('.'), $atom]))
+                    ->setAction($concat)
+            ]))->setAction($concat),
             1,
             Repeat::INFINITE
-        ),
+        ))->setAction($concat),
         $tldSpec
-    ])
-]);
+    ]))->setAction($concat)
+]))->setAction(function ($params) {
+    if (count($params) !== 3) {
+        throw new Exception(sprintf('Expected exactly 3 parts, got %d', count($params)));
+    }
+
+    return array(
+        'local' => $params[0],
+        'domain' => $params[2],
+    );
+});
 
 $S = new FullParser($addrSpec);
 
 try {
     $match = $S->match('this.is@an.email.address.com');
-    $match->getClean();
-    echo $match->exportTree() . "\n";
+    var_dump($match->getSemanticValue());
 } catch (FailureException $ex) {
     echo $ex->getDisplayMessage() . "\n";
     exit(1);

@@ -20,18 +20,6 @@ class GroupResult extends Result
     }
 
     /**
-     * @return string
-     */
-    public function exportTree()
-    {
-        $output = [];
-        foreach ($this->results as $result) {
-            $output[] = preg_replace('/^/m', '  ', $result->exportTree());
-        }
-        return implode("\n", $output);
-    }
-
-    /**
      * @return FailureException
      */
     public function getFailure()
@@ -66,26 +54,21 @@ class GroupResult extends Result
         return $this->results;
     }
 
-    public function getClean()
+    /**
+     * @return mixed
+     */
+    public function getSemanticValue()
     {
-        $refreshed = [];
-        foreach ($this->results as $result) {
-            $new = $result->getClean();
-
-            if ($new && !$new instanceof EmptyResult) {
-                $refreshed[] = $new;
-            }
+        $params = [];
+        foreach ($this->getResults() as $sub) {
+            $params[] = $sub->getSemanticValue();
         }
 
-        if (!$refreshed) {
-            return new EmptyResult();
+        $action = $this->getAction();
+        if (!$action) {
+            return $params;
         }
 
-        if (count($refreshed) === 1) {
-            return $refreshed[0];
-        }
-
-        $this->results = $refreshed;
-        return $this;
+        return $action($params);
     }
 }

@@ -1,6 +1,7 @@
 <?php
 namespace ES\Parser\Combinator;
 
+use BadMethodCallException;
 use ES\Parser\FailureException;
 use ES\Parser\Parser;
 use ES\Parser\Result;
@@ -55,5 +56,14 @@ class LookaheadCombinator extends Parser
         }
 
         return $result;
+    }
+
+    /**
+     * @param callable $action
+     * @return $this
+     */
+    public function setAction(callable $action)
+    {
+        throw new BadMethodCallException('LookaheadCombination does not support semantic actions');
     }
 }

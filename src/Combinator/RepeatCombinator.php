@@ -75,6 +75,6 @@ class RepeatCombinator extends Parser
             $result->setFailure($failure);
         }
 
-        return $result;
+        return $this->expandResult($result);
     }
 }

@@ -51,7 +51,7 @@ class CharacterSetParser extends Parser
 
         $char = $string[$offset];
         if (in_array($char, $this->characters)) {
-            return new Result\StringResult($char);
+            return $this->expandResult(new Result\StringResult($char));
         }
 
         throw (new FailureException('Unable to match', $offset))
