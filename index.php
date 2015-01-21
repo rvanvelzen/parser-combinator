@@ -3,7 +3,6 @@ use ES\Parser\Combinator\ConcatenationCombinator as Concat;
 use ES\Parser\Combinator\OrCombinator as OneOf;
 use ES\Parser\Combinator\RepeatCombinator as Repeat;
 use ES\Parser\FailureException;
-use ES\Parser\Parser\CharacterRangeParser as CharRange;
 use ES\Parser\Parser\CharacterSetParser as CharSet;
 use ES\Parser\Parser\FullParser;
 use ES\Parser\Parser\StringParser as String;
@@ -22,9 +21,9 @@ spl_autoload_register(function ($class) {
 });
 
 $atom = new Repeat(new OneOf([
-    new CharRange('A', 'Z'),
-    new CharRange('a', 'z'),
-    new CharRange('0', '9'),
+    new CharSet(range('A', 'Z')),
+    new CharSet(range('a', 'z')),
+    new CharSet(range('0', '9')),
     new CharSet('!#$%&\'*+/=?^_`{|}~-'),
 ]), 1);
 
