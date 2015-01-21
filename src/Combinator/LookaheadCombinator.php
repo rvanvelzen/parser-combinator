@@ -18,6 +18,7 @@ class LookaheadCombinator extends Parser
     private $lookahead;
 
     /**
+     * @param string $type
      * @param Parser $parser
      * @param Parser $lookahead
      */
