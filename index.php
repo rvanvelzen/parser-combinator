@@ -39,27 +39,25 @@ foreach (['com', 'org', 'net', 'nl', 'be'] as $tld) {
 }
 $tldSpec = new Concat([new String('.'), $tldSpec, new EOS()]);
 
-$addrSpec = new Concat(
-    [
-        new Concat([
-            $word,
-            new Repeat(new Concat([new String('.'), $word]))
-        ]),
-        new String('@'),
-        new Concat([
-            $atom,
-            new Repeat(
-                new Concat([
-                    new Lookahead(Lookahead::NEGATIVE, new Nothing(), $tldSpec),
-                    new Concat([new String('.'), $atom])
-                ]),
-                1,
-                Repeat::INFINITE
-            ),
-            $tldSpec
-        ])
-    ]
-);
+$addrSpec = new Concat([
+    new Concat([
+        $word,
+        new Repeat(new Concat([new String('.'), $word]))
+    ]),
+    new String('@'),
+    new Concat([
+        $atom,
+        new Repeat(
+            new Concat([
+                new Lookahead(Lookahead::NEGATIVE, new Nothing(), $tldSpec),
+                new Concat([new String('.'), $atom])
+            ]),
+            1,
+            Repeat::INFINITE
+        ),
+        $tldSpec
+    ])
+]);
 
 $S = new FullParser($addrSpec);
 

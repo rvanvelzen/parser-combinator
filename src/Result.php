@@ -38,14 +38,6 @@ abstract class Result
     }
 
     /**
-     * @return Result|null
-     */
-    public function nextOption()
-    {
-        return null;
-    }
-
-    /**
      * Prune empty nodes.
      */
     public function getClean()

@@ -36,8 +36,7 @@ class RepeatCombinator extends Parser
      */
     public function match($string, $offset = 0)
     {
-        $result = (new Result\RepeatResult())
-            ->setMin($this->min);
+        $result = new Result\GroupResult();
         /** @var FailureException|null $failure */
         $failure = null;
 
