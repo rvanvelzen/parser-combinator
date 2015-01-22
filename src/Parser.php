@@ -16,7 +16,6 @@ abstract class Parser
      * @param Input $input
      * @param int $offset
      * @return Result
-     * @internal param Input $state
      */
     abstract protected function match(Input $input, $offset);
 

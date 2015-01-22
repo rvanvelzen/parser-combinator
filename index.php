@@ -8,6 +8,7 @@ use ES\Parser\FailureException;
 use ES\Parser\Parser\CharacterSetParser as CharSet;
 use ES\Parser\Parser\EmptyParser as Nothing;
 use ES\Parser\Parser\FullParser;
+use ES\Parser\Parser\ProxyParser as Proxy;
 use ES\Parser\Parser\RegexParser;
 use ES\Parser\Parser\StringParser as String;
 
@@ -31,9 +32,9 @@ $digit = (new RegexParser('/^\d+(?:\.\d+)?/'))
 
 $addOp = new OneOf([new String('+'), new String('-')]);
 $mulOp = new OneOf([new String('*'), new String('/')]);
-$expr = new Concat();
-$term = new Concat();
-$factor = new OneOf();
+$expr = new Proxy();
+$term = new Proxy();
+$factor = new Proxy();
 
 $opAction = function (array $values) {
     list ($result, $extra) = $values;
@@ -62,18 +63,18 @@ $repeatAction = function ($value) {
     }
 };
 
-$expr->addParser($term);
-$expr->addParser(
+$expr->setParser(new Concat([
+    $term,
     (new Repeat(new Concat([$addOp, $term])))
         ->setAction($repeatAction)
-);
+]));
 $expr->setAction($opAction);
 
-$term->addParser($factor);
-$term->addParser(
+$term->setParser(new Concat([
+    $factor,
     (new Repeat(new Concat([$mulOp, $factor])))
         ->setAction($repeatAction)
-);
+]));
 $term->setAction($opAction);
 
 $parenthesized = new Concat([new String('('), $expr, new String(')')]);
@@ -81,8 +82,10 @@ $parenthesized->setAction(function (array $params) {
     return $params[1];
 });
 
-$factor->addParser($parenthesized);
-$factor->addParser($digit);
+$factor->setParser(new OneOf([
+    $parenthesized,
+    $digit
+]));
 
 $S = new FullParser($expr);
 
