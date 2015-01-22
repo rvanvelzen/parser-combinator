@@ -65,10 +65,10 @@ class GroupResult extends Result
         }
 
         $action = $this->getAction();
-        if (!$action) {
-            return $params;
+        if ($action) {
+            return $action($params);
         }
 
-        return $action($params);
+        return $params;
     }
 }

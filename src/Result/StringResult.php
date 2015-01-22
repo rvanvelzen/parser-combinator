@@ -40,6 +40,11 @@ class StringResult extends Result
      */
     public function getSemanticValue()
     {
+        $action = $this->getAction();
+        if ($action) {
+            return $action($this->string);
+        }
+
         return $this->string;
     }
 }

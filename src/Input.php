@@ -32,7 +32,11 @@ class Input
      */
     public function getSubstring($from, $to = null)
     {
-        return substr($this->input, $from, $to);
+        if ($to === null) {
+            return substr($this->input, $from);
+        } else {
+            return substr($this->input, $from, $to);
+        }
     }
 
     /**

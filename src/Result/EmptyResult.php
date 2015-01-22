@@ -18,8 +18,11 @@ class EmptyResult extends Result
      */
     public function getSemanticValue()
     {
+        $action = $this->getAction();
+        if ($action) {
+            return $action(null);
+        }
+
         return null;
     }
-
-
 }
