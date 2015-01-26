@@ -3,10 +3,10 @@ namespace ES\Parser\Parser;
 
 use BadMethodCallException;
 use ES\Parser\Assertion\EndAssertion;
-use ES\Parser\Combinator\LookaheadCombinator;
+use ES\Parser\Combinator\ConcatenationCombinator;
+use ES\Parser\Input;
 use ES\Parser\Parser;
 use ES\Parser\Result;
-use ES\Parser\Input;
 
 class FullParser extends Parser
 {
@@ -18,11 +18,14 @@ class FullParser extends Parser
      */
     public function __construct(Parser $parser)
     {
-        $this->parser = new LookaheadCombinator(
-            LookaheadCombinator::POSITIVE,
+        $this->parser = new ConcatenationCombinator([
             $parser,
             new EndAssertion()
-        );
+        ]);
+
+        $this->parser->setAction(function (array $result) {
+            return $result[0];
+        });
     }
 
     /**

@@ -1,13 +1,13 @@
 <?php
-namespace ES\Parser\Combinator;
+namespace ES\Parser\Assertion;
 
 use BadMethodCallException;
 use ES\Parser\FailureException;
+use ES\Parser\Input;
 use ES\Parser\Parser;
 use ES\Parser\Result;
-use ES\Parser\Input;
 
-class LookaheadCombinator extends Parser
+class LookaheadAssertion extends Parser
 {
     const POSITIVE = 'positive';
     const NEGATIVE = 'negative';
@@ -15,19 +15,15 @@ class LookaheadCombinator extends Parser
     /** @var string */
     private $type;
     /** @var Parser */
-    private $parser;
-    /** @var Parser */
     private $lookahead;
 
     /**
      * @param string $type
-     * @param Parser $parser
      * @param Parser $lookahead
      */
-    public function __construct($type, Parser $parser, Parser $lookahead)
+    public function __construct($type, Parser $lookahead)
     {
         $this->type = $type;
-        $this->parser = $parser;
         $this->lookahead = $lookahead;
     }
 
@@ -38,12 +34,11 @@ class LookaheadCombinator extends Parser
      */
     protected function match(Input $input, $offset)
     {
-        $result = $this->parser->match($input, $offset);
         /** @var FailureException|null $failure */
         $failure = null;
 
         try {
-            $this->lookahead->match($input, $offset + $result->getLength());
+            $this->lookahead->match($input, $offset);
         } catch (FailureException $failure) {
             // handle this right below here
         }
@@ -56,7 +51,7 @@ class LookaheadCombinator extends Parser
             throw new FailureException('Unexpected match for negative lookahead', $offset);
         }
 
-        return $result;
+        return new Result\EmptyResult();
     }
 
     /**

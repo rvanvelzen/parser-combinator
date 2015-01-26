@@ -1,12 +1,8 @@
 <?php
-use ES\Parser\Assertion\EndAssertion as EOS;
 use ES\Parser\Combinator\ConcatenationCombinator as Concat;
-use ES\Parser\Combinator\LookaheadCombinator as Lookahead;
 use ES\Parser\Combinator\OrCombinator as OneOf;
 use ES\Parser\Combinator\RepeatCombinator as Repeat;
 use ES\Parser\FailureException;
-use ES\Parser\Parser\CharacterSetParser as CharSet;
-use ES\Parser\Parser\EmptyParser as Nothing;
 use ES\Parser\Parser\FullParser;
 use ES\Parser\Parser\ProxyParser as Proxy;
 use ES\Parser\Parser\RegexParser;
@@ -22,6 +18,7 @@ spl_autoload_register(function ($class) {
     $structured = str_replace('\\', DIRECTORY_SEPARATOR, substr($class, strlen($prefix)));
     $path = __DIR__ . '/src/' . $structured . '.php';
 
+    /** @noinspection PhpIncludeInspection */
     require $path;
 });
 
