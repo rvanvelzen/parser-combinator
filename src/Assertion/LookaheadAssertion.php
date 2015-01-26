@@ -30,7 +30,7 @@ class LookaheadAssertion extends Parser
     /**
      * @param Input $input
      * @param int $offset
-     * @return Result
+     * @return Result[]
      */
     protected function match(Input $input, $offset)
     {
@@ -51,15 +51,6 @@ class LookaheadAssertion extends Parser
             throw new FailureException('Unexpected match for negative lookahead', $offset);
         }
 
-        return new Result\EmptyResult();
-    }
-
-    /**
-     * @param callable $action
-     * @return $this
-     */
-    public function setAction(callable $action)
-    {
-        throw new BadMethodCallException('LookaheadCombination does not support semantic actions');
+        return [$this->expandResult(new Result\EmptyResult())];
     }
 }

@@ -11,7 +11,7 @@ class EndAssertion extends Parser
     /**
      * @param Input $input
      * @param int $offset
-     * @return Result
+     * @return Result[]
      */
     protected function match(Input $input, $offset)
     {
@@ -20,6 +20,6 @@ class EndAssertion extends Parser
                 ->setExpecting('$eos');
         }
 
-        return $this->expandResult(new Result\EmptyResult());
+        return [$this->expandResult(new Result\EmptyResult())];
     }
 }

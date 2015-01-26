@@ -33,37 +33,51 @@ class RepeatCombinator extends Parser
     /**
      * @param Input $input
      * @param int $offset
-     * @return Result
+     * @return Result[]
      */
     protected function match(Input $input, $offset)
     {
-        $result = new Result\GroupResult();
+        /** @var Result\GroupResult[] $result */
+        $result = [new Result\GroupResult()];
+        $matchCount = 0;
 
-        $matches = 0;
-        try {
-            while ($matches < $this->max) {
-                $match = $this->parser->match($input, $offset + $result->getLength());
-
-                $result->addResult($match);
-
-                ++$matches;
-            }
-        } catch (FailureException $ex) {
-            // actually handling error cases follows
+        if ($this->min === 0) {
+            yield $this->expandResult($result[0]);
         }
 
-        if ($matches < $this->min) {
+        while ($matchCount < $this->max) {
+            $new = [];
+            foreach ($result as $old) {
+                try {
+                    $matches = $this->parser->match($input, $offset + $old->getLength());
+                    foreach ($matches as $match) {
+                        $sub = clone $old;
+                        $sub->addResult($match);
+                        $new[] = $sub;
+
+                        if ($matchCount + 1 >= $this->min) {
+                            yield $this->expandResult($sub);
+                        }
+                    }
+                } catch (FailureException $ex) {
+
+                }
+            }
+
+            if (!$new) {
+                break;
+            }
+
+            $result = $new;
+            ++$matchCount;
+        }
+
+        if ($matchCount < $this->min) {
             throw new FailureException(sprintf(
                 'Unable to match at least %d repetitions, only matched %d',
                 $this->min,
-                $matches
+                $matchCount
             ), $offset);
         }
-
-        if (!$matches) {
-            $result = new Result\EmptyResult();
-        }
-
-        return $this->expandResult($result);
     }
 }

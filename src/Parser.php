@@ -9,13 +9,15 @@ abstract class Parser
     public function parse($string)
     {
         $state = new Input($string);
-        return $this->match($state, 0);
+        foreach ($this->match($state, 0) as $match) {
+            return $match;
+        }
     }
 
     /**
      * @param Input $input
      * @param int $offset
-     * @return Result
+     * @return Result[]
      */
     abstract protected function match(Input $input, $offset);
 

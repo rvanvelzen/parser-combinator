@@ -35,6 +35,7 @@ $factor = new Proxy();
 
 $opAction = function (array $values) {
     list ($result, $extra) = $values;
+
     foreach ($extra as list($op, $value)) {
         if ($op === '+') {
             $result += $value;
@@ -88,7 +89,7 @@ $S = new FullParser($expr);
 
 try {
     $match = $S->parse(preg_replace('/\s+/', '', '(1*2+3)*(4-2)'));
-    print_r($match->getSemanticValue());
+    var_dump($match->getSemanticValue());
 } catch (FailureException $ex) {
     echo $ex->getDisplayMessage() . "\n";
     exit(1);

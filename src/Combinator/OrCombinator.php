@@ -35,19 +35,18 @@ class OrCombinator extends Parser
     /**
      * @param Input $input
      * @param int $offset
-     * @return Result
+     * @return Result[]
      */
     protected function match(Input $input, $offset)
     {
-        /** @var Result|null $longest */
-        $longest = null;
         $failure = null;
+        $any = false;
 
         foreach ($this->parsers as $parser) {
             try {
-                $match = $parser->match($input, $offset);
-                if (!$longest || $match->getLength() > $longest->getLength()) {
-                    $longest = $match;
+                foreach ($parser->match($input, $offset) as $match) {
+                    yield $match;
+                    $any = true;
                 }
             } catch (FailureException $ex) {
                 if ($ex->isMoreUsefulThan($failure)) {
@@ -56,11 +55,13 @@ class OrCombinator extends Parser
             }
         }
 
-        if (!$longest && $failure) {
+        if (!$any) {
+            if (!$failure) {
+                throw new \RuntimeException('Unexpected non-match');
+            }
+
             throw $failure;
         }
-
-        return $longest;
     }
 
     /**

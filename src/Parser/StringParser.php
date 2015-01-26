@@ -32,7 +32,7 @@ class StringParser extends Parser
     /**
      * @param Input $input
      * @param int $offset
-     * @return Result
+     * @return Result[]
      */
     protected function match(Input $input, $offset)
     {
@@ -49,7 +49,7 @@ class StringParser extends Parser
         }
 
         if ($match) {
-            return $this->expandResult(new Result\StringResult($this->string));
+            return [$this->expandResult(new Result\StringResult($this->string))];
         }
 
         throw (new FailureException('Unable to match', $offset))

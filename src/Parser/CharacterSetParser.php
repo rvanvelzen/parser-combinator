@@ -41,7 +41,7 @@ class CharacterSetParser extends Parser
     /**
      * @param Input $input
      * @param int $offset
-     * @return Result
+     * @return Result[]
      */
     protected function match(Input $input, $offset)
     {
@@ -52,7 +52,7 @@ class CharacterSetParser extends Parser
 
         $char = $input->getSubstring($offset, 1);
         if (in_array($char, $this->characters)) {
-            return $this->expandResult(new Result\StringResult($char));
+            return [$this->expandResult(new Result\StringResult($char))];
         }
 
         throw (new FailureException('Unable to match', $offset))

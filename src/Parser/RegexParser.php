@@ -23,7 +23,7 @@ class RegexParser extends Parser
     /**
      * @param Input $input
      * @param int $offset
-     * @return Result
+     * @return Result[]
      */
     protected function match(Input $input, $offset)
     {
@@ -42,7 +42,7 @@ class RegexParser extends Parser
                 ));
             }
 
-            return $this->expandResult(new Result\StringResult($text));
+            return [$this->expandResult(new Result\StringResult($text))];
         }
 
         throw new FailureException(sprintf('Unable to match "%s"', $this->regex), $offset);

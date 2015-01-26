@@ -1,6 +1,7 @@
 <?php
 namespace ES\Parser\Combinator;
 
+use ES\Parser\FailureException;
 use ES\Parser\Parser;
 use ES\Parser\Result;
 use ES\Parser\Input;
@@ -33,19 +34,43 @@ class ConcatenationCombinator extends Parser
     /**
      * @param Input $input
      * @param int $offset
-     * @return Result
+     * @return Result[]
      */
     protected function match(Input $input, $offset)
     {
-        $result = new Result\GroupResult();
+        /** @var Result\GroupResult[] $result */
+        $result = [new Result\GroupResult()];
+        $failure = null;
 
         foreach ($this->parsers as $parser) {
-            $match = $parser->match($input, $offset);
-
-            $result->addResult($match);
-            $offset += $match->getLength();
+            $new = [];
+            foreach ($result as $old) {
+                try {
+                    $matches = $parser->match($input, $offset + $old->getLength());
+                    foreach ($matches as $match) {
+                        $sub = clone $old;
+                        $sub->addResult($match);
+                        $new[] = $sub;
+                    }
+                } catch (FailureException $ex) {
+                    if ($ex->isMoreUsefulThan($failure)) {
+                        $failure = $ex;
+                    }
+                }
+            }
+            $result = $new;
         }
 
-        return $this->expandResult($result);
+        if (!$result) {
+            if (!$failure) {
+                throw new \RuntimeException('Unexpected non-match');
+            }
+
+            throw $failure;
+        }
+
+        foreach ($result as $sub) {
+            yield $this->expandResult($sub);
+        }
     }
 }

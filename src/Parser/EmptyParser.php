@@ -10,10 +10,10 @@ class EmptyParser extends Parser
     /**
      * @param Input $input
      * @param int $offset
-     * @return Result
+     * @return Result[]
      */
     protected function match(Input $input, $offset)
     {
-        return $this->expandResult(new Result\EmptyResult());
+        return [$this->expandResult(new Result\EmptyResult())];
     }
 }
