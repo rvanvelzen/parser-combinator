@@ -30,27 +30,33 @@ class LookaheadAssertion extends Parser
     /**
      * @param Input $input
      * @param int $offset
-     * @return Result[]
+     * @return Result
      */
     protected function match(Input $input, $offset)
     {
-        /** @var FailureException|null $failure */
-        $failure = null;
-
         try {
-            $this->lookahead->match($input, $offset);
+            foreach ($this->lookahead->match($input, $offset) as $oops) {
+                if ($this->type === self::NEGATIVE) {
+                    throw new FailureException('Unexpected match for negative lookahead', $offset);
+                } else {
+                    break;
+                }
+            }
         } catch (FailureException $failure) {
-            // handle this right below here
-        }
-
-        if ($failure) {
             if ($this->type === self::POSITIVE) {
                 throw $failure;
             }
-        } elseif ($this->type === self::NEGATIVE) {
-            throw new FailureException('Unexpected match for negative lookahead', $offset);
         }
 
         return [$this->expandResult(new Result\EmptyResult())];
+    }
+
+    /**
+     * @param callable $action
+     * @return $this
+     */
+    public function setAction(callable $action)
+    {
+        throw new BadMethodCallException('LookaheadCombination does not support semantic actions');
     }
 }

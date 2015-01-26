@@ -8,19 +8,7 @@ use ES\Parser\Parser\ProxyParser as Proxy;
 use ES\Parser\Parser\RegexParser;
 use ES\Parser\Parser\StringParser as String;
 
-// so sneaky
-spl_autoload_register(function ($class) {
-    $prefix = 'ES\\Parser\\';
-    if (strncasecmp($class, $prefix, strlen($prefix)) !== 0) {
-        return;
-    }
-
-    $structured = str_replace('\\', DIRECTORY_SEPARATOR, substr($class, strlen($prefix)));
-    $path = __DIR__ . '/src/' . $structured . '.php';
-
-    /** @noinspection PhpIncludeInspection */
-    require $path;
-});
+require __DIR__ . '/bootstrap.php';
 
 $digit = (new RegexParser('/^\d+(?:\.\d+)?/'))
     ->setAction(function ($value) {
@@ -35,7 +23,6 @@ $factor = new Proxy();
 
 $opAction = function (array $values) {
     list ($result, $extra) = $values;
-
     foreach ($extra as list($op, $value)) {
         if ($op === '+') {
             $result += $value;
